@@ -1,9 +1,0 @@
-@openzeppelin/=lib/hot-chain-svg/node_modules/@openzeppelin/
-ds-test/=lib/forge-std/lib/ds-test/src/
-forge-std/=lib/forge-std/src/
-hot-chain-svg-script/=lib/hot-chain-svg/script/
-hot-chain-svg-test/=lib/hot-chain-svg/test/
-hot-chain-svg/=lib/hot-chain-svg/contracts/
-openzeppelin-contracts/=lib/hot-chain-svg/lib/openzeppelin-contracts/contracts/
-solady/=lib/solady/src/
-solmate/=lib/solmate/src/
