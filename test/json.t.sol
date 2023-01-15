@@ -4,11 +4,13 @@ pragma solidity ^0.8.4;
 import { Test } from "forge-std/Test.sol";
 import { json } from "../src/json.sol";
 import { StringTestUtility } from "./helpers/StringTestUtility.sol";
+import { LibString } from "solady/utils/LibString.sol";
 
 contract JsonTest is Test {
     using json for string;
     using StringTestUtility for string;
     using StringTestUtility for string[];
+    // using LibString for string;
 
     function testObject(string memory objectContents) public {
         string memory objectified = objectContents.object();
@@ -102,10 +104,27 @@ contract JsonTest is Test {
     }
 
     function testQuote(string memory value) public {
+        string memory newValue = LibString.escapeJSON(value);
+        vm.assume(bytes(newValue).length == bytes(value).length);
         string memory quoted = value.quote();
         assertTrue(quoted.startsWith('"'));
         assertTrue(quoted.endsWith('"'));
         assertTrue(quoted.contains(value));
+    }
+
+    function testThing() public {
+        address noody;
+        bytes memory stuff =
+            hex"6014601d600c393636363636515afa3d36363e363d9161001b57fd5bf3FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+        assembly {
+            noody := create(0, add(stuff, 0x20), mload(stuff))
+        }
+        require(noody != address(0), "addy 0");
+        // require(noody.code.length > 0, "no code");
+        assembly {
+            noody := create(0, add(stuff, 0x20), mload(stuff))
+        }
+        require(noody != address(0), "addy 0");
     }
 
     function testJoinComma(string memory str, uint8 times) public {

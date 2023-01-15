@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
+import { LibString } from "solady/utils/LibString.sol";
+
 library json {
+    using LibString for string;
+
     /**
      * @notice enclose a string in {braces}
+     *         Note: does not escape quotes in value
      * @param  value string to enclose in braces
      * @return string of {value}
      */
@@ -13,6 +18,7 @@ library json {
 
     /**
      * @notice enclose a string in [brackets]
+     *         Note: does not escape quotes in value
      * @param value string to enclose in brackets
      * @return string of [value]
      */
@@ -21,28 +27,31 @@ library json {
     }
 
     /**
-     * @notice enclose name and value with quotes, and place a colon "between":"them"
+     * @notice enclose name and value with quotes, and place a colon "between":"them".
+     *         Note: escapes quotes in name and value
      * @param name name of property
      * @param value value of property
      * @return string of "name":"value"
      */
     function property(string memory name, string memory value) internal pure returns (string memory) {
-        return string.concat('"', name, '":"', value, '"');
+        return string.concat('"', name.escapeJSON(), '":"', value.escapeJSON(), '"');
     }
 
     /**
      * @notice enclose name with quotes, but not rawValue, and place a colon "between":them
+     *         Note: escapes quotes in name, but not value (which may itself be a JSON object, array, etc)
      * @param name name of property
      * @param rawValue raw value of property, which will not be enclosed in quotes
      * @return string of "name":value
      */
     function rawProperty(string memory name, string memory rawValue) internal pure returns (string memory) {
-        return string.concat('"', name, '":', rawValue);
+        return string.concat('"', name.escapeJSON(), '":', rawValue);
     }
 
     /**
      * @notice comma-join an array of properties and {"enclose":"them","in":"braces"}
-     * @param properties array of properties to join
+     *         Note: does not escape quotes in properties, as it assumes they are already escaped
+     * @param properties array of '"name":"value"' properties to join
      * @return string of {"name":"value","name":"value",...}
      */
     function objectOf(string[] memory properties) internal pure returns (string memory) {
@@ -58,6 +67,7 @@ library json {
 
     /**
      * @notice comma-join an array of values and enclose them [in,brackets]
+     *         Note: does not escape quotes in values, as it assumes they are already escaped
      * @param values array of values to join
      * @return string of [value,value,...]
      */
@@ -67,6 +77,7 @@ library json {
 
     /**
      * @notice comma-join two arrays of values and [enclose,them,in,brackets]
+     *         Note: does not escape quotes in values, as it assumes they are already escaped
      * @param values1 first array of values to join
      * @param values2 second array of values to join
      * @return string of [values1_0,values1_1,values2_0,values2_1...]
@@ -81,12 +92,12 @@ library json {
     }
 
     /**
-     * @notice enclose a string in double "quotes"
+     * @notice enclose a string in double "quotes", escaping any existing quotes
      * @param str string to enclose in quotes
      * @return string of "value"
      */
     function quote(string memory str) internal pure returns (string memory) {
-        return string.concat('"', str, '"');
+        return string.concat('"', str.escapeJSON(), '"');
     }
 
     /**
